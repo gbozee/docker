@@ -31,10 +31,12 @@ RUN cd /tmp && \
 
 RUN mkdir -pv ${BASE_DIR}/src && \
     mkdir -pv ${BASE_DIR}/site && \
+    mkdir -pv ${BASE_DIR}/static && \
+    mkdir -pv ${BASE_DIR}/media && \
     mkdir -pv ${BASE_DIR}/log
 
-COPY site ${BASE_DIR}/site
-COPY deploy.sh ${BASE_DIR}/deploy.sh
+COPY deploy.sh site ${BASE_DIR}
+COPY entrypoint.sh /
 
 WORKDIR ${BASE_DIR}
 
@@ -45,5 +47,7 @@ ONBUILD COPY . ${BASE_DIR}/src
 ONBUILD RUN ${PIP} --no-cache-dir --upgrade pip
 ONBUILD RUN ${PIP} -r $(find . -type f -name requirements.txt| head -1)
 ONBUILD RUN ./deploy.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
 
 VOLUME ${BASE_DIR}
