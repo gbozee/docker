@@ -1,0 +1,1 @@
+FROM geodjango:latest
