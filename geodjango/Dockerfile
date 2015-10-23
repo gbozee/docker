@@ -18,6 +18,8 @@ RUN cd /tmp && \
         gdal-devel \
         geos \
         geos-devel \
+        gcc \
+        libxml2-devel \
         nginx \
         postgresql${PG_NODOT} \        
         postgresql${PG_NODOT}-devel \        
