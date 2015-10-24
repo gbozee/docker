@@ -1,6 +1,12 @@
+import os
+
+_APP_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
+
+STATIC_ROOT = os.path.join(_APP_DIR, 'web/static/')
+MEDIA_ROOT =  os.path.join(_APP_DIR, 'web/media/')
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
@@ -10,12 +16,10 @@ DATABASES = {
         'NAME': 'postgis',
         'USER': 'postgis',
         'PASSWORD':'postgis',
-        'HOST': '127.0.0.1',
+        'HOST': 'postgis',
+        'PORT': os.environ.get('POSGIS_PORT_5432_TCP_PORT'),
     },
 }
-
-MEDIA_ROOT = '/srv/geodjango/media'
-STATIC_ROOT = '/srv/geodjango/static'
 
 LOGGING = {
         'version': 1,
@@ -30,7 +34,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '/srv/geodjango/log/django.log',
+            'filename': os.path.join(_APP_DIR, 'log/django.log'),
             'formatter': 'verbose',
             'maxBytes' : 1048576,
             'backupCount': 3,

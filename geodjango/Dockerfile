@@ -4,7 +4,7 @@ ENV CENTOS_VERSION=7 \
     PG_VERSION=9.4 \
     PG_NODOT=94 \
     POSTGIS_VERSION=2 \
-    BASE_DIR=/srv/geodjango
+    BASE_DIR=/usr/geodjango
 
 RUN cd /tmp && \
     yum install -y epel-release && \
@@ -25,29 +25,33 @@ RUN cd /tmp && \
         postgresql${PG_NODOT}-devel \        
         proj-devel \
         pwgen \
+        python \
+        python-devel \
+        python-libs \
         python-pip \
-        python-virtualenv \
         uwsgi-plugin-python
 
 RUN mkdir -pv ${BASE_DIR}/src && \
     mkdir -pv ${BASE_DIR}/site && \
-    mkdir -pv ${BASE_DIR}/static && \
-    mkdir -pv ${BASE_DIR}/media && \
+    mkdir -pv ${BASE_DIR}/web/static && \
+    mkdir -pv ${BASE_DIR}/web/media && \
     mkdir -pv ${BASE_DIR}/log
 
-COPY deploy.sh site ${BASE_DIR}
+COPY deploy.sh set_pythonpath.sh  ${BASE_DIR}/
+COPY site ${BASE_DIR}/site
 COPY entrypoint.sh /
 
 WORKDIR ${BASE_DIR}
 
 ENV PIP /usr/bin/pip install --no-cache-dir
 ENV PATH /usr/pgsql-${PG_VERSION}/bin:${PATH}
+RUN ${PIP} --upgrade pip
+RUN ${PIP} Django psycopg2
 
-ONBUILD COPY . ${BASE_DIR}/src
-ONBUILD RUN ${PIP} --no-cache-dir --upgrade pip
+ONBUILD COPY . ${BASE_DIR}/src/
 ONBUILD RUN ${PIP} -r $(find . -type f -name requirements.txt| head -1)
 ONBUILD RUN ./deploy.sh
 
-ENTRYPOINT ["/entrypoint.sh"]
+# ENTRYPOINT ["/entrypoint.sh"]
 
 VOLUME ${BASE_DIR}
