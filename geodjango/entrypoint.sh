@@ -1,9 +1,8 @@
 #!/bin/bash
 # Set PYTHONPATH
-source ${BASE_DIR}/set_pythonpath.sh
+source ${BASE_DIR}/build_env.sh
 
 # Prepare DB
-export DJANGO_SETTINGS_MODULE=site.production
 /usr/bin/python src/manage.py migrate --noinput --no-color
 
 # Start uwsgi

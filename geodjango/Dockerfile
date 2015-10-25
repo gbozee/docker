@@ -29,6 +29,7 @@ RUN cd /tmp && \
         python-devel \
         python-libs \
         python-pip \
+        python-urllib3 \
         uwsgi-plugin-python
 
 RUN mkdir -pv ${BASE_DIR}/src && \
@@ -37,7 +38,13 @@ RUN mkdir -pv ${BASE_DIR}/src && \
     mkdir -pv ${BASE_DIR}/web/media && \
     mkdir -pv ${BASE_DIR}/log
 
-COPY deploy.sh set_pythonpath.sh  ${BASE_DIR}/
+ONBUILD COPY . ${BASE_DIR}/src/
+ONBUILD RUN ${PIP} -r $(find . -type f -name requirements.txt| head -1)
+ONBUILD RUN ${BASE_DIR}/django_settings.sh
+ONBUILD COPY ./production.py ${BASE_DIR}/site
+ONBUILD RUN ${BASE_DIR}/deploy.sh
+
+COPY deploy.sh build_env.sh django_settings.sh ${BASE_DIR}/
 COPY site ${BASE_DIR}/site
 COPY entrypoint.sh /
 
@@ -47,10 +54,6 @@ ENV PIP /usr/bin/pip install --no-cache-dir
 ENV PATH /usr/pgsql-${PG_VERSION}/bin:${PATH}
 RUN ${PIP} --upgrade pip
 RUN ${PIP} Django psycopg2
-
-ONBUILD COPY . ${BASE_DIR}/src/
-ONBUILD RUN ${PIP} -r $(find . -type f -name requirements.txt| head -1)
-ONBUILD RUN ./deploy.sh
 
 # ENTRYPOINT ["/entrypoint.sh"]
 
