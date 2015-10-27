@@ -1,4 +1,5 @@
 import os
+import platform
 
 _APP_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -8,7 +9,7 @@ TEMPLATE_DEBUG = DEBUG
 STATIC_ROOT = os.path.join(_APP_DIR, 'web/static/')
 MEDIA_ROOT =  os.path.join(_APP_DIR, 'web/media/')
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', platform.node()]
 
 DATABASES = {
     'default': {

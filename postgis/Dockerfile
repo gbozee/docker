@@ -40,7 +40,7 @@ ENV PSQL /usr/pgsql-${PG_VERSION}/bin/psql
 #  Create postgis extensions 
 # Create postgis superuser
 RUN /usr/pgsql-${PG_VERSION}/bin/pg_ctl start -D ${PGDATA} -w && \
-    ${PSQL} -c "CREATE USER postgis WITH PASSWORD 'postgis' CREATEDB" && \
+    ${PSQL} -c "CREATE USER postgis WITH PASSWORD 'postgis' SUPERUSER" && \
     ${PSQL} -c "CREATE DATABASE postgis WITH OWNER postgis" && \
     ${PSQL} -c "CREATE EXTENSION postgis" postgis && \
     ${PSQL} -c "CREATE EXTENSION postgis_topology" postgis && \

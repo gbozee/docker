@@ -3,6 +3,7 @@
 source ${BASE_DIR}/build_env.sh
 
 # Prepare DB
+export DJANGO_SETTINGS_MODULE=site.production
 /usr/bin/python src/manage.py migrate --noinput --no-color
 
 # Start uwsgi
@@ -11,6 +12,4 @@ source ${BASE_DIR}/build_env.sh
     --ini ${BASE_DIR}/site/uwsgi.ini
 
 # Exec nginx
-exec /usr/sbin/nginx -c ${BASE_DIR}/site/nginx.conf \
-     -g "env base_dir=${BASE_DIR}" "$@"
-
+exec /usr/sbin/nginx -p ${BASE_DIR} -c ${BASE_DIR}/site/nginx.conf "$@"

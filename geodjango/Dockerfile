@@ -34,6 +34,7 @@ RUN cd /tmp && \
 
 RUN mkdir -pv ${BASE_DIR}/src && \
     mkdir -pv ${BASE_DIR}/site && \
+    mkdir -pv ${BASE_DIR}/run && \
     mkdir -pv ${BASE_DIR}/web/static && \
     mkdir -pv ${BASE_DIR}/web/media && \
     mkdir -pv ${BASE_DIR}/log
@@ -41,10 +42,16 @@ RUN mkdir -pv ${BASE_DIR}/src && \
 ONBUILD COPY . ${BASE_DIR}/src/
 ONBUILD RUN ${PIP} -r $(find . -type f -name requirements.txt| head -1)
 ONBUILD RUN ${BASE_DIR}/django_settings.sh
-ONBUILD COPY ./production.py ${BASE_DIR}/site
 ONBUILD RUN ${BASE_DIR}/deploy.sh
+ONBUILD RUN chown -R nginx:nginx \
+    ${BASE_DIR}/log \
+    ${BASE_DIR}/run \
+    ${BASE_DIR}/web/media
+ONBUILD VOLUME ${BASE_DIR}
 
-COPY deploy.sh build_env.sh django_settings.sh ${BASE_DIR}/
+COPY build_env.sh  ${BASE_DIR}/
+COPY deploy.sh  ${BASE_DIR}/
+COPY django_settings.sh ${BASE_DIR}/
 COPY site ${BASE_DIR}/site
 COPY entrypoint.sh /
 
@@ -55,6 +62,5 @@ ENV PATH /usr/pgsql-${PG_VERSION}/bin:${PATH}
 RUN ${PIP} --upgrade pip
 RUN ${PIP} Django psycopg2
 
-# ENTRYPOINT ["/entrypoint.sh"]
-
-VOLUME ${BASE_DIR}
+EXPOSE 80
+ENTRYPOINT ["/entrypoint.sh"]
