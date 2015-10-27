@@ -16,6 +16,7 @@ RUN cd /tmp && \
         postgis${POSTGIS_VERSION}_${PG_NODOT} \
         postgis${POSTGIS_VERSION}_${PG_NODOT}-client \
         postgis${POSTGIS_VERSION}_${PG_NODOT}-utils \
+        pgrouting_${PG_NODOT} \
         postgresql${PG_NODOT}-contrib \        
         postgresql${PG_NODOT}-server
 
@@ -44,9 +45,11 @@ ENV PSQL /usr/pgsql-${PG_VERSION}/bin/psql
 RUN /usr/pgsql-${PG_VERSION}/bin/pg_ctl start -D ${PGDATA} -w && \
     ${PSQL} -c "CREATE USER postgis WITH PASSWORD 'postgis' SUPERUSER" && \
     ${PSQL} -c "CREATE DATABASE postgis WITH OWNER postgis" && \
+    ${PSQL} -c "CREATE EXTENSION cube" postgis && \
     ${PSQL} -c "CREATE EXTENSION earthdistance" postgis && \
     ${PSQL} -c "CREATE EXTENSION postgis" postgis && \
     ${PSQL} -c "CREATE EXTENSION postgis_topology" postgis && \
+    ${PSQL} -c "CREATE EXTENSION fuzzystrmatch" postgis && \
     ${PSQL} -c "CREATE EXTENSION postgis_tiger_geocoder" postgis && \
     ${PSQL} -c "CREATE EXTENSION pgrouting" postgis && \
     /usr/pgsql-${PG_VERSION}/bin/pg_ctl stop -D ${PGDATA} -w
