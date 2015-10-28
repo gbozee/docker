@@ -23,20 +23,13 @@ DATABASES = {
 }
 
 LOGGING = {
-        'version': 1,
+    'version': 1,
     'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': 
-            '%(asctime)s:%(name)s.%(funcName)s:%(lineno)d: %(message)s',
-        },
-    },
     'handlers': {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': os.path.join(_APP_DIR, 'log/django.log'),
-            'formatter': 'verbose',
             'maxBytes' : 1048576,
             'backupCount': 3,
         },
