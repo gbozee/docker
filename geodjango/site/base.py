@@ -9,7 +9,7 @@ TEMPLATE_DEBUG = DEBUG
 STATIC_ROOT = os.path.join(_APP_DIR, 'web/static/')
 MEDIA_ROOT =  os.path.join(_APP_DIR, 'web/media/')
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', platform.node()]
+ALLOWED_HOSTS = ['*']
 
 DATABASES = {
     'default': {
