@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
-    'world'
+    'rest_framework',
+    'rest_framework_gis',
+    'nigeria'
 ]
 
 MIDDLEWARE_CLASSES = [
