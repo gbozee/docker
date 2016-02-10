@@ -1,0 +1,30 @@
+
+dbdata:
+  image: busybox
+  command: "true"
+  volumes:
+    - /var/lib/postgresql/data
+    - /tmp/ 
+    - /var/tuteria
+
+db:
+  image:mdillon/postgis
+  env_file:
+    - ./db.env
+  ports:
+    - "5432"
+  volumes_from:
+    - dbdata
+
+dev:
+  build: .
+  restart: always
+  ports: 
+    - "8000:8000"
+  env_file:
+    - ./dev.env  
+  links:
+    - db:db_server
+  volumes_from:
+    - dbdata
+
