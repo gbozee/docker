@@ -1,66 +1,28 @@
-FROM centos:7
+FROM python:2.7
+MAINTAINER Olivier Tabone <olivier.tabone@ripplemotion.fr>
 
-ENV CENTOS_VERSION=7 \
-    PG_VERSION=9.4 \
-    PG_NODOT=94 \
-    POSTGIS_VERSION=2 \
-    BASE_DIR=/usr/geodjango
+ENV C_INCLUDE_PATH /usr/include/gdal/
+ENV CPLUS_INCLUDE_PATH /usr/include/gdal/
 
-RUN cd /tmp && \
-    yum install -y epel-release && \
-    curl -o pgdg.rpm http://yum.postgresql.org/${PG_VERSION}/redhat/rhel-${CENTOS_VERSION}-x86_64/pgdg-redhat${PG_NODOT}-${PG_VERSION}-1.noarch.rpm && \
-    yum localinstall -y pgdg.rpm && \
-    yum upgrade -y && \
-    yum install -y \
-        GeoIP-devel \
-        GeoIP-update \
-        gdal \
-        gdal-devel \
-        geos \
-        geos-devel \
-        gcc \
-        libxml2-devel \
-        nginx \
-        postgresql${PG_NODOT} \        
-        postgresql${PG_NODOT}-devel \        
-        proj-devel \
-        pwgen \
-        python \
-        python-devel \
-        python-libs \
-        python-pip \
-        python-urllib3 \
-        uwsgi-plugin-python
+RUN set -x \
+    && apt-get update \
+    && apt-get install -y \
+        libgdal-dev \
+        swig \
+        postgresql-client \
+        protobuf-compiler \
+        libprotoc-dev \
+        locales \
+        osmosis \
+        libgeoip-dev geoip-database-extra \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+       
 
-RUN mkdir -pv ${BASE_DIR}/src && \
-    mkdir -pv ${BASE_DIR}/site && \
-    mkdir -pv ${BASE_DIR}/run && \
-    mkdir -pv ${BASE_DIR}/web/static && \
-    mkdir -pv ${BASE_DIR}/web/media && \
-    mkdir -pv ${BASE_DIR}/log
+RUN set -x \
+    && mkdir -p ~/.ssh \
+    && ssh-keyscan -t rsa bitbucket.org > ~/.ssh/known_hosts \
+    && chmod 644 ~/.ssh/known_hosts
 
-ONBUILD COPY . ${BASE_DIR}/src/
-ONBUILD RUN ${PIP} -r $(find . -type f -name requirements.txt| head -1)
-ONBUILD RUN ${BASE_DIR}/django_settings.sh
-ONBUILD RUN ${BASE_DIR}/deploy.sh
-ONBUILD RUN chown -R nginx:nginx \
-    ${BASE_DIR}/log \
-    ${BASE_DIR}/run \
-    ${BASE_DIR}/web/media
-ONBUILD VOLUME ${BASE_DIR}
-
-COPY build_env.sh  ${BASE_DIR}/
-COPY deploy.sh  ${BASE_DIR}/
-COPY django_settings.sh ${BASE_DIR}/
-COPY site ${BASE_DIR}/site
-COPY entrypoint.sh /
-
-WORKDIR ${BASE_DIR}
-
-ENV PIP /usr/bin/pip install --no-cache-dir
-ENV PATH /usr/pgsql-${PG_VERSION}/bin:${PATH}
-RUN ${PIP} --upgrade pip
-RUN ${PIP} Django psycopg2
-
-EXPOSE 80
-ENTRYPOINT ["/entrypoint.sh"]
+RUN set -x \
+   && pip install --upgrade pip virtualenv setuptools wheel
