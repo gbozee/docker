@@ -1,3 +1,4 @@
+
 dbdata:
   image: busybox
   command: "true"
@@ -7,8 +8,9 @@ dbdata:
     - /var/tuteria
 
 db:
-  image:mdillon/postgis
-  env_file: ./env/db.env
+  image: mdillon/postgis
+  env_file:
+    - ./env/db.env
   ports:
     - "5432"
   volumes_from:
